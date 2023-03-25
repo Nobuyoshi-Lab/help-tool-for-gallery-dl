@@ -9,6 +9,6 @@ A tool built based on mikf/gallery-dl
 `gallery-dl` is needed before using the `help tool for gallery-dl.exe` file.
 
 ## Resources:
-Original Github: 
+gallery-dl Github repository: 
 * [gallery-dl](https://github.com/mikf/gallery-dl)
 * [Script](https://github.com/mikf/gallery-dl/blob/master/docs/gallery-dl-example.conf)
