@@ -10,7 +10,5 @@ A tool built based on mikf/gallery-dl
 
 ## Resources:
 Original Github: 
-
-[gallery-dl](https://github.com/mikf/gallery-dl)
-
-[Script](https://github.com/mikf/gallery-dl/blob/master/docs/gallery-dl-example.conf)
+* [gallery-dl](https://github.com/mikf/gallery-dl)
+* [Script](https://github.com/mikf/gallery-dl/blob/master/docs/gallery-dl-example.conf)
