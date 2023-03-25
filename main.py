@@ -306,5 +306,5 @@ window.mainloop()
 *       + give the program os permissions
 * 
 * packaging:
-*   > pyinstaller --windowed ./main.py -y
+*   > pyinstaller main.py --onefile --windowed --icon=images/app_icon.ico
 '''
