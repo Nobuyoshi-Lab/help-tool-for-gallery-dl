@@ -8,24 +8,27 @@ from threading import Thread
 from tkinter import filedialog
 
 
+# Update the background color of the label
 def update_label_bg(label, bg_color):
     label.config(bg=bg_color)
 
 
-def insert_function(line, terminal, color='white'):
+# Insert the command line output into the terminal window
+def insert_cmd_line_output(line, terminal, color='white'):
     terminal.configure(state="normal")
     terminal.insert(tk.END, line, color)
     terminal.configure(state="disabled")
     terminal.see(tk.END)
 
 
+# Define color map for stages
 color_map = {
     'running': 'yellow',
     'finished': 'green',
 }
 
-
-def command(cmd, terminal):
+# Execute command in a separate thread and update the stage color
+def execute_command(cmd, terminal):
     p = subprocess.Popen(
         cmd,
         stdin=subprocess.PIPE,
@@ -38,86 +41,91 @@ def command(cmd, terminal):
     p.poll()
 
     # Blue color for the running stage
-    update_label_bg(stage_color, color_map['running'])
+    update_label_bg(stage_color_label, color_map['running'])
 
     while True:
         line = p.stdout.readline()
-        insert_function(line, terminal)
+        insert_cmd_line_output(line, terminal)
         if not line.strip() and p.poll is not None:
             break
 
     try:
-        p.wait(timeout=timeout_sec)
+        p.wait(timeout=timeout_seconds)
     except subprocess.TimeoutExpired:
         p.kill()
 
     # Green color for the finished stage
-    update_label_bg(stage_color, color_map['finished'])
-    window.title(title_name + dash + "Done")
+    update_label_bg(stage_color_label, color_map['finished'])
+    window.title(window_title + " - " + "Done")
 
 
-def path_function(path):
+# Create a file if it doesn't exist and return the file path
+def create_file_if_not_exists(path):
     filepath = Path(path)
     filepath.touch(exist_ok=True)
     return filepath
 
 
+# Open a file and load its content into the text window
 def open_file(path):
-    filepath = path_function(path)
+    filepath = create_file_if_not_exists(path)
     with open(filepath, mode="r", encoding="utf-8") as input_file:
         text = input_file.read()
         text_window.insert(tk.END, text)
 
 
+# Save the content of the text window to the specified file
 def save_file(path):
-    filepath = path_function(path)
+    filepath = create_file_if_not_exists(path)
     with open(filepath, mode="w", encoding="utf-8") as output_file:
         text = text_window.get("1.0", tk.END)
         output_file.write(text)
-    window.title(title_name + dash + "File Saved")
+    window.title(window_title + " - " + "File Saved")
 
 
-def execution(path):
-    clear_stdout()
+# Execute the main command and update the UI accordingly
+def execute_main_command(path):
+    clear_terminal_output()
     save_file(path)
-    window.title(title_name + dash + "Running")
+    window.title(window_title + " - " + "Running")
     cmd = ['cmd', '/k', 'gallery-dl', '-i', path]
-    process = Thread(target=lambda: command(cmd, cmd_window))
+    process = Thread(target=lambda: execute_command(cmd, terminal_output_window))
     process.start()
 
 
-def clear_stdout():
-    cmd_window.configure(state="normal")
-    cmd_window.delete("1.0", "end")
+# Clear the terminal output window
+def clear_terminal_output():
+    terminal_output_window.configure(state="normal")
+    terminal_output_window.delete("1.0", "end")
 
 
+# Clear the text window
 def clear_text():
     text_window.delete("1.0", "end")
 
 
-#  default parameters
+# Default parameters
 nord_bg = "#2E3440"
 nord_tc = "#D8DFE4"
 absolute_path = os.path.dirname(os.path.abspath(__file__))
 file_path = os.path.join(absolute_path, 'urls.txt')
-title_name = "Help Tool for Gallery-DL"
-dash = " - "
-timeout_sec = 3
+window_title = "Help Tool for Gallery-DL"
+timeout_seconds = 3
 font_setting = ("Consolas", 12)
 window_size = "1000x1000"
 
-#  create application window
+# Create application window
 window = tk.Tk()
-window.title(title_name)
+window.title(window_title)
 window.geometry(window_size)
 window.resizable(False, False)
 
-#  grids configuration
+# Configure window grids
 window.rowconfigure(0, weight=1)
 window.rowconfigure(1, weight=3)
 window.columnconfigure(0, weight=1)
 
-#  create text window
+# Create text window and terminal output window
 text_window = tk.Text(
     window,
     bg="antique white",
@@ -125,73 +133,71 @@ text_window = tk.Text(
     font=font_setting
 )
 
-cmd_window = tk.Text(
+terminal_output_window = tk.Text(
     window,
     bg=nord_bg,
     fg=nord_tc,
     font=font_setting
 )
 
-#  open exist file with URLs, else create one
+# Open existing file with URLs, else create one
 open_file(file_path)
 
-# buttons initialization
-frm_buttons = tk.Frame(window, relief=tk.RAISED, bd=4)
+# Buttons initialization
+buttons_frame = tk.Frame(window, relief=tk.RAISED, bd=4)
 
-#  ============================================================
-#  buttons configuration
-btn_execution = tk.Button(
-    frm_buttons,
-    text = "Get Image",
-    command = lambda: execution(file_path)
+# Buttons configuration
+execute_button = tk.Button(
+    buttons_frame,
+    text="Get Image",
+    command=lambda: execute_main_command(file_path)
 )
-btn_execution.pack(side="left")
+execute_button.pack(side="left")
 
-btn_save = tk.Button(
-    frm_buttons,
-    text = "Save URLs",
-    command = lambda: save_file(file_path)
+save_button = tk.Button(
+    buttons_frame,
+    text="Save URLs",
+    command=lambda: save_file(file_path)
 )
-btn_save.pack(side="left")
+save_button.pack(side="left")
 
-btn_clear = tk.Button(
-    frm_buttons,
-    text = "Clear All URLs",
-    command = clear_text
+clear_button = tk.Button(
+    buttons_frame,
+    text="Clear All URLs",
+    command=clear_text
 )
-btn_clear.pack(side="left")
+clear_button.pack(side="left")
 
-btn_restore = tk.Button(
-    frm_buttons,
-    text = "Restore URLs",
+restore_button = tk.Button(
+    buttons_frame,
+    text="Restore URLs",
     command=lambda: open_file(file_path)
 )
-btn_restore.pack(side="left")
-#  ============================================================
+restore_button.pack(side="left")
 
-#  ============================================================
+# ============================================================
 config_locations = [
     os.path.join(os.environ['APPDATA'], 'gallery-dl', 'config.json'),
     os.path.join(os.environ['USERPROFILE'], 'gallery-dl', 'config.json'),
     os.path.join(os.environ['USERPROFILE'], 'gallery-dl.conf')
 ]
 
-conf_file_path = "Config Not Found"
-conf_found = conf_file_path
-conf_found_indication = "red"
+config_file_path = "Config Not Found"
+config_status = config_file_path
+config_status_color = "red"
 
 for location in config_locations:
     if os.path.isfile(location):
-        conf_file_path = location
-        conf_found = "Config Found"
-        conf_found_indication = "green"
+        config_file_path = location
+        config_status = "Config Found"
+        config_status_color = "green"
         break
 
 # Function for reading the config file
 def read_config_file(file_path):
     with open(file_path, "r") as file:
-        conf_data = json.load(file)
-    return conf_data
+        config_data = json.load(file)
+    return config_data
 
 # Function for writing the config file
 def write_config_file(file_path, data):
@@ -205,97 +211,98 @@ def update_label_file_explorer(new_text):
     download_folder_path.set(new_text)
 
 # Function for opening the file explorer window
-def getFolderPath():
+def get_folder_path():
     folder_selected = filedialog.askdirectory()
     download_folder_path.set(folder_selected)
 
-    if conf_file_path != "Config Not Found":
-        conf_data = read_config_file(conf_file_path)
+    if config_file_path != "Config Not Found":
+        config_data = read_config_file(config_file_path)
         new_directory = download_folder_path.get()
-        conf_data["extractor"]["base-directory"] = new_directory
-        write_config_file(conf_file_path, conf_data)
+        config_data["extractor"]["base-directory"] = new_directory
+        write_config_file(config_file_path, config_data)
         update_label_file_explorer(new_directory)
 
 # If the config file is found, update the label_file_explorer with the base-directory value
-if conf_file_path != "Config Not Found":
-    conf_data = read_config_file(conf_file_path)
-    update_label_file_explorer(conf_data["extractor"]["base-directory"])
+if config_file_path != "Config Not Found":
+    config_data = read_config_file(config_file_path)
+    update_label_file_explorer(config_data["extractor"]["base-directory"])
 
 # Create a File Explorer label
 explorer_interface = tk.Frame(window, relief=tk.RAISED, bd=3)
 
-label_found_conf = tk.Label(
+config_status_label = tk.Label(
     explorer_interface,
-    text = conf_found,
-    width = 20,
-    height = 4,
-    fg = conf_found_indication,
+    text=config_status,
+    width=20,
+    height=4,
+    fg=config_status_color,
     anchor="w"
 )
-label_found_conf.pack(side="left")
+config_status_label.pack(side="left")
 
-label_file_explorer = tk.Label(
+download_location_label = tk.Label(
     explorer_interface,
-    text = f"[Download Location] {download_folder_path.get()}",
-    width = 100,
-    height = 4,
-    fg = "black",
+    textvariable=download_folder_path,
+    width=100,
+    height=4,
+    fg="black",
     anchor="w"
 )
-label_file_explorer.pack(side="left")
+download_location_label.pack(side="left")
 
-button_explore = tk.Button(
+browse_files_button = tk.Button(
     explorer_interface,
-    text = "Browse Files",
-    command = getFolderPath
+    text="Browse Files",
+    command=get_folder_path
 )
-button_explore.pack(side="left")
-#  ============================================================
+browse_files_button.pack(side="left")
 
-#  assign widget to grids
-explorer_interface.grid(
-    row = 0,
-    column = 0,
-    sticky = "nsew"
-)
-
-cmd_window.grid(
-    row = 1,
-    column = 0,
-    sticky = "nsew"
-)
-
-color = tk.Frame(window, relief=tk.RAISED, bd=1)
+# ============================================================
+stage_indicator = tk.Frame(window, relief=tk.RAISED, bd=1)
 
 bg_color = "gray"
 
-stage_color = tk.Label(
-    color,
-    width = 1000,
-    height = 1,
-    bg = bg_color,
+stage_color_label = tk.Label(
+    stage_indicator,
+    width=1000,
+    height=1,
+    bg=bg_color,
 )
-stage_color.pack(side="left")
+stage_color_label.pack(side="left")
 
-color.grid(
-    row = 2,
-    column = 0,
-    sticky = "nsew"
+# ============================================================
+# Assign widgets to grids
+explorer_interface.grid(
+    row=0,
+    column=0,
+    sticky="nsew"
+)
+
+terminal_output_window.grid(
+    row=1,
+    column=0,
+    sticky="nsew"
+)
+
+stage_indicator.grid(
+    row=2,
+    column=0,
+    sticky="nsew"
 )
 
 text_window.grid(
-    row = 3,
-    column = 0,
-    sticky = "nsew"
+    row=3,
+    column=0,
+    sticky="nsew"
 )
 
-frm_buttons.grid(
-    row = 4,
-    column = 0,
-    sticky = "ns"
+buttons_frame.grid(
+    row=4,
+    column=0,
+    sticky="ns"
 )
 
-#  hold application window
+# Hold application window
 window.mainloop()
 
 '''
@@ -304,7 +311,7 @@ window.mainloop()
 *       + for pyinstaller
 *   > python -m pip install --upgrade pywin32
 *       + give the program os permissions
-* 
+*
 * packaging:
-*   > pyinstaller main.py --onefile --windowed --icon=images/app_icon.ico
+*   > pyinstaller main.py --onefile --windowed
 '''
