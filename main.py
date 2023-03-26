@@ -5,7 +5,7 @@ import tkinter as tk
 
 from pathlib import Path
 from threading import Thread
-from tkinter import filedialog
+from tkinter import filedialog, messagebox
 
 
 # Update the background color of the label
@@ -15,10 +15,13 @@ def update_label_bg(label, bg_color):
 
 # Insert the command line output into the terminal window
 def insert_cmd_line_output(line, terminal, color='white'):
-    terminal.configure(state="normal")
-    terminal.insert(tk.END, line, color)
-    terminal.configure(state="disabled")
-    terminal.see(tk.END)
+    def update_terminal():
+        terminal.configure(state="normal")
+        terminal.insert(tk.END, line, color)
+        terminal.configure(state="disabled")
+        terminal.see(tk.END)
+
+    terminal.after(0, update_terminal)
 
 
 # Define color map for stages
@@ -27,8 +30,14 @@ color_map = {
     'finished': 'green',
 }
 
+stop_process = False
+process = None
+
 # Execute command in a separate thread and update the stage color
 def execute_command(cmd, terminal):
+    global stop_process
+    global process
+
     p = subprocess.Popen(
         cmd,
         stdin=subprocess.PIPE,
@@ -40,13 +49,15 @@ def execute_command(cmd, terminal):
     )
     p.poll()
 
-    # Blue color for the running stage
     update_label_bg(stage_color_label, color_map['running'])
 
     while True:
         line = p.stdout.readline()
         insert_cmd_line_output(line, terminal)
-        if not line.strip() and p.poll is not None:
+        if not line.strip() and p.poll() is not None:
+            break
+        if stop_process:
+            p.terminate()
             break
 
     try:
@@ -54,9 +65,18 @@ def execute_command(cmd, terminal):
     except subprocess.TimeoutExpired:
         p.kill()
 
-    # Green color for the finished stage
     update_label_bg(stage_color_label, color_map['finished'])
     window.title(window_title + " - " + "Done")
+    stop_process = False
+
+
+def on_close():
+    global process, stop_process
+    if messagebox.askokcancel("Exit", "Are you sure you want to exit?"):
+        if process and process.is_alive():
+            stop_process = True
+            process.join()  # Wait for the thread to finish
+        window.destroy()
 
 
 # Create a file if it doesn't exist and return the file path
@@ -104,6 +124,11 @@ def clear_text():
     text_window.delete("1.0", "end")
 
 
+def stop_command():
+    global stop_process
+    stop_process = True
+
+    
 # Default parameters
 nord_bg = "#2E3440"
 nord_tc = "#D8DFE4"
@@ -144,7 +169,7 @@ terminal_output_window = tk.Text(
 open_file(file_path)
 
 # Buttons initialization
-buttons_frame = tk.Frame(window, relief=tk.RAISED, bd=4)
+buttons_frame = tk.Frame(window, relief=tk.RAISED, bd=5)
 
 # Buttons configuration
 execute_button = tk.Button(
@@ -175,6 +200,12 @@ restore_button = tk.Button(
 )
 restore_button.pack(side="left")
 
+stop_button = tk.Button(
+    buttons_frame,
+    text="Stop Process",
+    command=stop_command
+)
+stop_button.pack(side="left")
 # ============================================================
 config_locations = [
     os.path.join(os.environ['APPDATA'], 'gallery-dl', 'config.json'),
@@ -302,6 +333,9 @@ buttons_frame.grid(
     sticky="ns"
 )
 
+# Bind the custom close function to the window's close button
+window.protocol("WM_DELETE_WINDOW", on_close)
+
 # Hold application window
 window.mainloop()
 
@@ -313,5 +347,5 @@ window.mainloop()
 *       + give the program os permissions
 *
 * packaging:
-*   > pyinstaller main.py --onefile --windowed
+*   > pyinstaller main.py --onefile --windowed --name="gallery-dl-gui.exe"
 '''
