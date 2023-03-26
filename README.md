@@ -2,8 +2,6 @@
 
 This is a tool built based on [mikf/gallery-dl](https://github.com/mikf/gallery-dl) that provides a user-friendly interface for downloading image galleries from various websites. The GUI is built using the [Tkinter](https://docs.python.org/3/library/tkinter.html) library and simplifies the interaction with the Gallery-DL tool without requiring users to use command-line commands directly.
 
-![Gallery-DL GUI Screenshot](screenshot.png)
-
 ## Features
 
 1. **Text window**: Enter and edit URLs of image galleries to download.
