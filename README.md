@@ -21,7 +21,7 @@ Before using the tool, you must first install `gallery-dl`, which is a command-l
 
 ## Usage
 
-1. Download the latest release of Gallery-DL GUI from the [releases](https://github.com/your-repo/releases) page.
+1. Download the latest release of Gallery-DL GUI from the [releases](https://github.com/s07091012/help-tool-for-gallery-dl/releases) page.
 2. Extract the contents of the zip file and run the `gallery-dl-gui.exe` file to start the GUI.
 3. Enter and edit URLs in the text window.
 4. Use the provided buttons to execute the main command, save URLs, clear URLs, and restore URLs.
@@ -30,5 +30,5 @@ Before using the tool, you must first install `gallery-dl`, which is a command-l
 
 ## Resources
 
-- [gallery-dl GitHub repository](https://github.com/mikf/gallery-dl): This is the official GitHub repository for `gallery-dl`, where you can find documentation and the latest releases.
-- [gallery-dl configuration example](https://github.com/mikf/gallery-dl/blob/master/docs/gallery-dl-example.conf): This is an example configuration file for `gallery-dl` that can be used to customize the tool's behavior.
+- [gallery-dl GitHub repository](https://github.com/mikf/gallery-dl): This is the official GitHub repository for `gallery-dl`, where you can find documentation and the latest releases. **(Disclaimer: gallery-dl is not owned by me, it is originally developed by mikf)**
+- [gallery-dl configuration example](https://github.com/mikf/gallery-dl/blob/master/docs/gallery-dl-example.conf): This is an example configuration file for `gallery-dl` that can be used to customize the tool's behavior. **(Disclaimer: gallery-dl-example.conf is not owned by me, it is originally developed by mikf)**
