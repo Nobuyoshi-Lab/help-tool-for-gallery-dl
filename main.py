@@ -347,5 +347,5 @@ window.mainloop()
 *       + give the program os permissions
 *
 * packaging:
-*   > pyinstaller main.py --onefile --windowed --name="gallery-dl-gui.exe"
+*   > pyinstaller main.py --onedir --windowed --name="gallery-dl-gui.exe"
 '''
