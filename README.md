@@ -21,8 +21,8 @@ Before using the tool, you must first install `gallery-dl`, which is a command-l
 
 ## Usage
 
-1. Download the latest release of Gallery-DL GUI from the [releases](https://github.com/s07091012/help-tool-for-gallery-dl/releases) page.
-2. Extract the contents of the zip file and run the `gallery-dl-gui.exe` file to start the GUI.
+1. Download the latest release of Gallery-DL GUI from the [releases](https://github.com/s07091012/help-tool-for-gallery-dl/releases) page (OR run the batch file).
+2. Extract the contents of the zip file and run the `gallery-dl-gui/gallery-dl-gui.exe` file to start the GUI.
 3. Enter and edit URLs in the text window.
 4. Use the provided buttons to execute the main command, save URLs, clear URLs, and restore URLs.
 5. Browse and select a download folder using the file explorer interface.
