@@ -30,5 +30,5 @@ Before using the tool, you must first install `gallery-dl`, which is a command-l
 
 ## Resources
 
-- [gallery-dl GitHub repository](https://github.com/mikf/gallery-dl): This is the official GitHub repository for `gallery-dl`, where you can find documentation and the latest releases. **(Disclaimer: gallery-dl is not owned by me, it is originally developed by mikf)**
-- [gallery-dl configuration example](https://github.com/mikf/gallery-dl/blob/master/docs/gallery-dl-example.conf): This is an example configuration file for `gallery-dl` that can be used to customize the tool's behavior. **(Disclaimer: gallery-dl-example.conf is not owned by me, it is originally developed by mikf)**
+- [gallery-dl GitHub repository](https://github.com/mikf/gallery-dl): This is the official GitHub repository for `gallery-dl`, where you can find documentation and the latest releases (GNU General Public License v2.0). **(Disclaimer: gallery-dl is not owned by me, it is originally developed by mikf)**
+- [gallery-dl configuration example](https://github.com/mikf/gallery-dl/blob/master/docs/gallery-dl-example.conf): This is an example configuration file for `gallery-dl` that can be used to customize the tool's behavior (GNU General Public License v2.0). **(Disclaimer: gallery-dl-example.conf is not owned by me, it is originally developed by mikf)**
